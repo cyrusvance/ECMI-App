@@ -363,17 +363,32 @@
 	
 	$Name = $_REQUEST["name"]; //It is preferred to use the Facebook Graph API -> User -> Name for this.
 	$Date = date(DATE_RFC822);
-
+	
+	
+	$url=parse_url(getenv("CLEARDB_DATABASE_URL"));
+	$server = $url["host"];
+    $username = $url["user"];
+    $password = $url["pass"];
+    $db = substr($url["path"],1);
+    
 	// Submit results to database
 	// Edit the entries enclosed with < and > accordingly.
-	$con = mysql_connect("localhost","<sql user>","<sql password>");
+	$con =  mysql_connect($server, $username, $password);
 	
-	if (!$con) { die('Your results were not recorded. Server connection error.'); }
-	if (!mysql_select_db("<sql database>", $con)) 	{	die('Your results were not recorded. Database error.');	}
+	if (!$con) 
+	{ 
+		die('Your results were not recorded. Server connection error.'); 
+	}
+	if (!mysql_select_db($db, $con)) 	
+	{	
+		die('Your results were not recorded. Database error.');	
+	}
 		
 	$query = "INSERT INTO user (uid, date_entered,intuitive,rational,orient_others,orient_self,morality,pragmatic,follower,innovator) VALUES ('$Name','$Date', '$N', '$R', '$O', '$S', '$M', '$P', '$F', '$I')";
 	if (!mysql_query($query)) 
-	{	die ('<br />Your results were not recorded. Couldnt submit data.');	} 
+	{	
+		die ('<br />Your results were not recorded. Couldnt submit data.');	
+	} 
 	
 	
 	
